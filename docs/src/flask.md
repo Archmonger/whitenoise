@@ -1,6 +1,6 @@
-# Using WhiteNoise with Flask
+# Using ServeStatic with Flask
 
-This guide walks you through setting up a Flask project with WhiteNoise. In most cases it shouldn't take more than a couple of lines of configuration.
+This guide walks you through setting up a Flask project with ServeStatic. In most cases it shouldn't take more than a couple of lines of configuration.
 
 ## 1. Make sure where your _static_ is located
 
@@ -8,18 +8,18 @@ If you're familiar with Flask you'll know what to do. If you're just getting sta
 
 Check the `static_folder` argument in [Flask Application Object documentation](http://flask.pocoo.org/docs/api/#application-object) for further information.
 
-## 2. Enable WhiteNoise
+## 2. Enable ServeStatic
 
-In the file where you create your app you instantiate Flask Application Object (the `flask.Flask()` object). All you have to do is to wrap it with `WhiteNoise()` object.
+In the file where you create your app you instantiate Flask Application Object (the `flask.Flask()` object). All you have to do is to wrap it with `ServeStatic()` object.
 
 If you use Flask quick start approach it will look something like that:
 
 ```python
 from flask import Flask
-from whitenoise import WhiteNoise
+from servestatic import ServeStatic
 
 app = Flask(__name__)
-app.wsgi_app = WhiteNoise(app.wsgi_app, root="static/")
+app.wsgi_app = ServeStatic(app.wsgi_app, root="static/")
 ```
 
 If you opt for the [pattern of creating your app with a function](http://flask.pocoo.org/snippets/20/), then it would look like that:
@@ -27,7 +27,7 @@ If you opt for the [pattern of creating your app with a function](http://flask.p
 ```python
 from flask import Flask
 from sqlalchemy import create_engine
-from whitenoise import WhiteNoise
+from servestatic import ServeStatic
 
 from myapp import config
 from myapp.views import frontend
@@ -43,26 +43,26 @@ def create_app(database_uri, debug=False):
     # register your blueprints
     app.register_blueprint(frontend)
 
-    # add whitenoise
-    app.wsgi_app = WhiteNoise(app.wsgi_app, root="static/")
+    # add servestatic
+    app.wsgi_app = ServeStatic(app.wsgi_app, root="static/")
 
     # other setup tasks
 
     return app
 ```
 
-That's it -- WhiteNoise will now serve your static files.
+That's it -- ServeStatic will now serve your static files.
 
 ## 3. Custom _static_ folder
 
-If it turns out that you are not using the Flask default for _static_ folder, fear not. You can instantiate WhiteNoise and add your _static_ folders later:
+If it turns out that you are not using the Flask default for _static_ folder, fear not. You can instantiate ServeStatic and add your _static_ folders later:
 
 ```python
 from flask import Flask
-from whitenoise import WhiteNoise
+from servestatic import ServeStatic
 
 app = Flask(__name__)
-app.wsgi_app = WhiteNoise(app.wsgi_app)
+app.wsgi_app = ServeStatic(app.wsgi_app)
 my_static_folders = (
     "static/folder/one/",
     "static/folder/two/",
@@ -72,16 +72,16 @@ for static in my_static_folders:
     app.wsgi_app.add_files(static)
 ```
 
-See the `WhiteNoise.add_files` documentation for further customization.
+See the `ServeStatic.add_files` documentation for further customization.
 
 ## 4. Prefix
 
-By default, WhiteNoise will serve up static files from the URL root --i.e., `http://localhost:5000/style.css`.
+By default, ServeStatic will serve up static files from the URL root --i.e., `http://localhost:5000/style.css`.
 
-To change that, set a [prefix](https://whitenoise.readthedocs.io/en/stable/base.html#whitenoise-api) string:
+To change that, set a [prefix](https://servestatic.readthedocs.io/en/stable/base.html#servestatic-api) string:
 
 ```python
-app.wsgi_app = WhiteNoise(app.wsgi_app, root="static/", prefix="assets/")
+app.wsgi_app = ServeStatic(app.wsgi_app, root="static/", prefix="assets/")
 ```
 
 Now, _style.css_ will be available at

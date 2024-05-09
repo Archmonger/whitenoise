@@ -1,4 +1,4 @@
-# Using WhiteNoise with Django
+# Using ServeStatic with Django
 
 <div class="note">
 
@@ -8,13 +8,13 @@ Note
 
 </div>
 
-To use WhiteNoise with a non-Django application see the `generic WSGI documentation <wsgi>` or the `generic ASGI documentation <asgi>`.
+To use ServeStatic with a non-Django application see the `generic WSGI documentation <wsgi>` or the `generic ASGI documentation <asgi>`.
 
 </div>
 
-This guide walks you through setting up a Django project with WhiteNoise. In most cases it shouldn't take more than a couple of lines of configuration.
+This guide walks you through setting up a Django project with ServeStatic. In most cases it shouldn't take more than a couple of lines of configuration.
 
-I mention Heroku in a few places as that was the initial use case which prompted me to create WhiteNoise, but there's nothing Heroku-specific about WhiteNoise and the instructions below should apply whatever your hosting platform.
+I mention Heroku in a few places as that was the initial use case which prompted me to create ServeStatic, but there's nothing Heroku-specific about ServeStatic and the instructions below should apply whatever your hosting platform.
 
 ## 1. Make sure _staticfiles_ is configured correctly
 
@@ -41,9 +41,9 @@ For further details see the Django
 [staticfiles](https://docs.djangoproject.com/en/stable/howto/static-files/)
 guide.
 
-## 2. Enable WhiteNoise
+## 2. Enable ServeStatic
 
-Edit your `settings.py` file and add WhiteNoise to the `MIDDLEWARE` list. The WhiteNoise middleware should be placed directly after the Django
+Edit your `settings.py` file and add ServeStatic to the `MIDDLEWARE` list. The ServeStatic middleware should be placed directly after the Django
 [SecurityMiddleware](https://docs.djangoproject.com/en/stable/ref/middleware/#module-django.middleware.security)
 (if you are using it) and before all other middleware:
 
@@ -51,12 +51,12 @@ Edit your `settings.py` file and add WhiteNoise to the `MIDDLEWARE` list. The Wh
 MIDDLEWARE = [
     # ...
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "servestatic.middleware.ServeStaticMiddleware",
     # ...
 ]
 ```
 
-That's it -- WhiteNoise will now serve your static files (you can confirm it's working using the `steps below <check-its-working>`).
+That's it -- ServeStatic will now serve your static files (you can confirm it's working using the `steps below <check-its-working>`).
 However, to get the best performance you should proceed to step 3 below and enable compression and caching.
 
 <div class="note">
@@ -67,13 +67,13 @@ Note
 
 </div>
 
-You might find other third-party middleware that suggests it should be given highest priority at the top of the middleware list. Unless you understand exactly what is happening you should ignore this advice and always place `WhiteNoiseMiddleware` above other middleware. If you plan to have other middleware run before WhiteNoise you should be aware of the [request_finished bug](https://code.djangoproject.com/ticket/29069) in Django.
+You might find other third-party middleware that suggests it should be given highest priority at the top of the middleware list. Unless you understand exactly what is happening you should ignore this advice and always place `ServeStaticMiddleware` above other middleware. If you plan to have other middleware run before ServeStatic you should be aware of the [request_finished bug](https://code.djangoproject.com/ticket/29069) in Django.
 
 </div>
 
 ## 3. Add compression and caching support
 
-WhiteNoise comes with a storage backend which compresses your files and hashes them to unique names, so they can safely be cached forever. To use it, set it as your staticfiles storage backend in your settings file.
+ServeStatic comes with a storage backend which compresses your files and hashes them to unique names, so they can safely be cached forever. To use it, set it as your staticfiles storage backend in your settings file.
 
 On Django 4.2+:
 
@@ -81,7 +81,7 @@ On Django 4.2+:
 STORAGES = {
     # ...
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "servestatic.storage.CompressedManifestStaticFilesStorage",
     },
 }
 ```
@@ -89,14 +89,14 @@ STORAGES = {
 On older Django versions:
 
 ```python
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "servestatic.storage.CompressedManifestStaticFilesStorage"
 ```
 
 This combines automatic compression with the caching behaviour provided by Django's
 [ManifestStaticFilesStorage](https://docs.djangoproject.com/en/stable/ref/contrib/staticfiles/#manifeststaticfilesstorage) backend. If you want to apply compression but don't want the caching behaviour then you can use the alternative backend:
 
 ```python
-"whitenoise.storage.CompressedStaticFilesStorage"
+"servestatic.storage.CompressedStaticFilesStorage"
 ```
 
 <div class="note">
@@ -107,7 +107,7 @@ Note
 
 </div>
 
-If you are having problems after switching to the WhiteNoise storage backend please see the `troubleshooting guide <storage-troubleshoot>`.
+If you are having problems after switching to the ServeStatic storage backend please see the `troubleshooting guide <storage-troubleshoot>`.
 
 </div>
 
@@ -115,11 +115,11 @@ If you need to compress files outside of the static files storage system you can
 
 ### Brotli compression
 
-As well as the common gzip compression format, WhiteNoise supports the newer, more efficient [brotli](https://en.wikipedia.org/wiki/Brotli)
+As well as the common gzip compression format, ServeStatic supports the newer, more efficient [brotli](https://en.wikipedia.org/wiki/Brotli)
 format. This helps reduce bandwidth and increase loading speed. To enable brotli compression you will need the [Brotli Python
-package](https://pypi.org/project/Brotli/) installed by running `pip install whitenoise[brotli]`.
+package](https://pypi.org/project/Brotli/) installed by running `pip install servestatic[brotli]`.
 
-Brotli is supported by [all major browsers](https://caniuse.com/#feat=brotli) (except IE11). WhiteNoise will only serve brotli data to browsers which request it so there are no compatibility issues with enabling brotli support.
+Brotli is supported by [all major browsers](https://caniuse.com/#feat=brotli) (except IE11). ServeStatic will only serve brotli data to browsers which request it so there are no compatibility issues with enabling brotli support.
 
 Also note that browsers will only request brotli data over an HTTPS connection.
 
@@ -127,9 +127,9 @@ Also note that browsers will only request brotli data over an HTTPS connection.
 
 The above steps will get you decent performance on moderate traffic sites, however for higher traffic sites, or sites where performance is a concern you should look at using a CDN.
 
-Because WhiteNoise sends appropriate cache headers with your static content, the CDN will be able to cache your files and serve them without needing to contact your application again.
+Because ServeStatic sends appropriate cache headers with your static content, the CDN will be able to cache your files and serve them without needing to contact your application again.
 
-Below are instruction for setting up WhiteNoise with Amazon CloudFront, a popular choice of CDN. The process for other CDNs should look very similar though.
+Below are instruction for setting up ServeStatic with Amazon CloudFront, a popular choice of CDN. The process for other CDNs should look very similar though.
 
 ### Instructions for Amazon CloudFront
 
@@ -175,16 +175,16 @@ By default your entire site will be accessible via the CloudFront URL. It's poss
 
 </div>
 
-## 5. Using WhiteNoise in development
+## 5. Using ServeStatic in development
 
-In development Django's `runserver` automatically takes over static file handling. In most cases this is fine, however this means that some of the improvements that WhiteNoise makes to static file handling won't be available in development and it opens up the possibility for differences in behaviour between development and production environments. For this reason it's a good idea to use WhiteNoise in development as well.
+In development Django's `runserver` automatically takes over static file handling. In most cases this is fine, however this means that some of the improvements that ServeStatic makes to static file handling won't be available in development and it opens up the possibility for differences in behaviour between development and production environments. For this reason it's a good idea to use ServeStatic in development as well.
 
-You can disable Django's static file handling and allow WhiteNoise to take over simply by passing the `--nostatic` option to the `runserver` command, but you need to remember to add this option every time you call `runserver`. An easier way is to edit your `settings.py` file and add `whitenoise.runserver_nostatic` to the top of your `INSTALLED_APPS` list:
+You can disable Django's static file handling and allow ServeStatic to take over simply by passing the `--nostatic` option to the `runserver` command, but you need to remember to add this option every time you call `runserver`. An easier way is to edit your `settings.py` file and add `servestatic.runserver_nostatic` to the top of your `INSTALLED_APPS` list:
 
 ```python
 INSTALLED_APPS = [
     # ...
-    "whitenoise.runserver_nostatic",
+    "servestatic.runserver_nostatic",
     "django.contrib.staticfiles",
     # ...
 ]
@@ -198,13 +198,13 @@ Note
 
 </div>
 
-In older versions of WhiteNoise (below v4.0) it was not possible to use `runserver_nostatic` with [Channels](https://channels.readthedocs.io/) as Channels provides its own implementation of runserver. Newer versions of WhiteNoise do not have this problem and will work with Channels or any other third-party app that provides its own implementation of runserver.
+In older versions of ServeStatic (below v4.0) it was not possible to use `runserver_nostatic` with [Channels](https://channels.readthedocs.io/) as Channels provides its own implementation of runserver. Newer versions of ServeStatic do not have this problem and will work with Channels or any other third-party app that provides its own implementation of runserver.
 
 </div>
 
 ## 6. Index Files
 
-When the `WHITENOISE_INDEX_FILE` option is enabled:
+When the `SERVESTATIC_INDEX_FILE` option is enabled:
 
 - Visiting `/example/` will serve the file at `/example/index.html`
 - Visiting `/example` will redirect (302) to `/example/`
@@ -214,11 +214,11 @@ If you want to something other than `index.html` as the index file, then you can
 
 ## Available Settings
 
-The WhiteNoiseMiddleware class takes all the same configuration options as the WhiteNoise base class, but rather than accepting keyword arguments to its constructor it uses Django settings. The setting names are just the keyword arguments upper-cased with a 'WHITENOISE\_' prefix.
+The ServeStaticMiddleware class takes all the same configuration options as the ServeStatic base class, but rather than accepting keyword arguments to its constructor it uses Django settings. The setting names are just the keyword arguments upper-cased with a 'SERVESTATIC\_' prefix.
 
 <div class="attribute">
 
-WHITENOISE_ROOT
+SERVESTATIC_ROOT
 
 default  
 `None`
@@ -231,7 +231,7 @@ Don't use this for the bulk of your static files because you won't benefit from 
 
 <div class="attribute">
 
-WHITENOISE_AUTOREFRESH
+SERVESTATIC_AUTOREFRESH
 
 default  
 `settings.DEBUG`
@@ -242,7 +242,7 @@ Recheck the filesystem to see if any files have changed before responding. This 
 
 <div class="attribute">
 
-WHITENOISE_USE_FINDERS
+SERVESTATIC_USE_FINDERS
 
 default  
 `settings.DEBUG`
@@ -253,7 +253,7 @@ Instead of only picking up files collected into `STATIC_ROOT`, find and serve fi
 
 <div class="attribute">
 
-WHITENOISE_MAX_AGE
+SERVESTATIC_MAX_AGE
 
 default  
 `60 if not settings.DEBUG else 0`
@@ -262,7 +262,7 @@ Time (in seconds) for which browsers and proxies should cache **non-versioned** 
 
 Versioned files (i.e. files which have been given a unique name like `base.a4ef2389.css` by including a hash of their contents in the name) are detected automatically and set to be cached forever.
 
-The default is chosen to be short enough not to cause problems with stale versions but long enough that, if you're running WhiteNoise behind a CDN, the CDN will still take the majority of the strain during times of heavy load.
+The default is chosen to be short enough not to cause problems with stale versions but long enough that, if you're running ServeStatic behind a CDN, the CDN will still take the majority of the strain during times of heavy load.
 
 Set to `None` to disable setting any `Cache-Control` header on non-versioned files.
 
@@ -270,7 +270,7 @@ Set to `None` to disable setting any `Cache-Control` header on non-versioned fil
 
 <div class="attribute">
 
-WHITENOISE_INDEX_FILE
+SERVESTATIC_INDEX_FILE
 
 default  
 `False`
@@ -281,7 +281,7 @@ If `True` enable `index file serving <index-files-django>`. If set to a non-empt
 
 <div class="attribute">
 
-WHITENOISE_MIMETYPES
+SERVESTATIC_MIMETYPES
 
 default  
 `None`
@@ -290,7 +290,7 @@ A dictionary mapping file extensions (lowercase) to the mimetype for that extens
 
     {'.foo': 'application/x-foo'}
 
-Note that WhiteNoise ships with its own default set of mimetypes and does not use the system-supplied ones (e.g. `/etc/mime.types`). This ensures that it behaves consistently regardless of the environment in which it's run. View the defaults in the `media_types.py <whitenoise/media_types.py>` file.
+Note that ServeStatic ships with its own default set of mimetypes and does not use the system-supplied ones (e.g. `/etc/mime.types`). This ensures that it behaves consistently regardless of the environment in which it's run. View the defaults in the `media_types.py <servestatic/media_types.py>` file.
 
 In addition to file extensions, mimetypes can be specified by supplying the entire filename, for example: :
 
@@ -300,7 +300,7 @@ In addition to file extensions, mimetypes can be specified by supplying the enti
 
 <div class="attribute">
 
-WHITENOISE_CHARSET
+SERVESTATIC_CHARSET
 
 default  
 `'utf-8'`
@@ -311,7 +311,7 @@ Charset to add as part of the `Content-Type` header for all files whose mimetype
 
 <div class="attribute">
 
-WHITENOISE_ALLOW_ALL_ORIGINS
+SERVESTATIC_ALLOW_ALL_ORIGINS
 
 default  
 `True`
@@ -326,7 +326,7 @@ The W3C [explicitly state](https://www.w3.org/TR/cors/#security) that this behav
 
 <div class="attribute">
 
-WHITENOISE_SKIP_COMPRESS_EXTENSIONS
+SERVESTATIC_SKIP_COMPRESS_EXTENSIONS
 
 default  
 `('jpg', 'jpeg', 'png', 'gif', 'webp','zip', 'gz', 'tgz', 'bz2', 'tbz', 'xz', 'br', 'swf', 'flv', 'woff', 'woff2')`
@@ -339,7 +339,7 @@ Because the compression process will only create compressed files where this res
 
 <div class="attribute">
 
-WHITENOISE_ADD_HEADERS_FUNCTION
+SERVESTATIC_ADD_HEADERS_FUNCTION
 
 default  
 `None`
@@ -352,7 +352,7 @@ For example: :
         if path.endswith('.pdf'):
             headers['Content-Disposition'] = 'attachment'
 
-    WHITENOISE_ADD_HEADERS_FUNCTION = force_download_pdfs
+    SERVESTATIC_ADD_HEADERS_FUNCTION = force_download_pdfs
 
 The function is passed:
 
@@ -371,10 +371,10 @@ The function should not return anything; changes should be made by modifying the
 
 <div class="attribute">
 
-WHITENOISE_IMMUTABLE_FILE_TEST
+SERVESTATIC_IMMUTABLE_FILE_TEST
 
 default  
-See `immutable_file_test <whitenoise/middleware.py#L134>` in source
+See `immutable_file_test <servestatic/middleware.py#L134>` in source
 
 Reference to function, or string.
 
@@ -389,7 +389,7 @@ Example: :
         # e.g. app.db8f2edc0c8a.js
         return re.match(r'^.+\.[0-9a-f]{12}\..+$', url)
 
-    WHITENOISE_IMMUTABLE_FILE_TEST = immutable_file_test
+    SERVESTATIC_IMMUTABLE_FILE_TEST = immutable_file_test
 
 The function is passed:
 
@@ -403,14 +403,14 @@ The host-relative URL of the file e.g. `/static/styles/app.css`
 
 <div class="attribute">
 
-WHITENOISE_STATIC_PREFIX
+SERVESTATIC_STATIC_PREFIX
 
 default  
 Path component of `settings.STATIC_URL` (with `settings.FORCE_SCRIPT_NAME` removed if set)
 
 The URL prefix under which static files will be served.
 
-Usually this can be determined automatically by using the path component of `STATIC_URL`. So if `STATIC_URL` is `https://example.com/static/` then `WHITENOISE_STATIC_PREFIX` will be `/static/`.
+Usually this can be determined automatically by using the path component of `STATIC_URL`. So if `STATIC_URL` is `https://example.com/static/` then `SERVESTATIC_STATIC_PREFIX` will be `/static/`.
 
 If your application is not running at the root of the domain and `FORCE_SCRIPT_NAME` is set then this value will be removed from the `STATIC_URL` path first to give the correct prefix.
 
@@ -420,24 +420,24 @@ If your deployment is more complicated than this (for instance, if you are using
 
 <div class="attribute">
 
-WHITENOISE_KEEP_ONLY_HASHED_FILES
+SERVESTATIC_KEEP_ONLY_HASHED_FILES
 
 default  
 `False`
 
 Stores only files with hashed names in `STATIC_ROOT`.
 
-By default, Django's hashed static files system creates two copies of each file in `STATIC_ROOT`: one using the original name, e.g. `app.js`, and one using the hashed name, e.g. `app.db8f2edc0c8a.js`. If WhiteNoise's compression backend is being used this will create another two copies of each of these files (using Gzip and Brotli compression) resulting in six output files for each input file.
+By default, Django's hashed static files system creates two copies of each file in `STATIC_ROOT`: one using the original name, e.g. `app.js`, and one using the hashed name, e.g. `app.db8f2edc0c8a.js`. If ServeStatic's compression backend is being used this will create another two copies of each of these files (using Gzip and Brotli compression) resulting in six output files for each input file.
 
 In some deployment scenarios it can be important to reduce the size of the build artifact as much as possible. This setting removes the "un-hashed" version of the file (which should be not be referenced in any case) which should reduce the space required for static files by half.
 
-Note, this setting is only effective if the WhiteNoise storage backend is being used.
+Note, this setting is only effective if the ServeStatic storage backend is being used.
 
 </div>
 
 <div class="attribute">
 
-WHITENOISE_MANIFEST_STRICT
+SERVESTATIC_MANIFEST_STRICT
 
 default  
 `True`
@@ -448,7 +448,7 @@ This works by setting the [manifest_strict](https://docs.djangoproject.com/en/st
 
 > If a file isn't found in the `staticfiles.json` manifest at runtime, a > `ValueError` is raised. This behavior can be disabled by subclassing > `ManifestStaticFilesStorage` and setting the `manifest_strict` > attribute to `False` -- nonexistent paths will remain unchanged.
 
-Note, this setting is only effective if the WhiteNoise storage backend is being used.
+Note, this setting is only effective if the ServeStatic storage backend is being used.
 
 </div>
 
@@ -456,13 +456,13 @@ Note, this setting is only effective if the WhiteNoise storage backend is being 
 
 ### Django Compressor
 
-For performance and security reasons WhiteNoise does not check for new files after startup (unless using Django <span class="title-ref">DEBUG</span> mode). As such, all static files must be generated in advance. If you're using Django Compressor, this can be performed using its [offline compression](https://django-compressor.readthedocs.io/en/stable/usage.html#offline-compression) feature.
+For performance and security reasons ServeStatic does not check for new files after startup (unless using Django <span class="title-ref">DEBUG</span> mode). As such, all static files must be generated in advance. If you're using Django Compressor, this can be performed using its [offline compression](https://django-compressor.readthedocs.io/en/stable/usage.html#offline-compression) feature.
 
 ---
 
 ### Serving Media Files
 
-WhiteNoise is not suitable for serving user-uploaded "media" files. For one thing, as described above, it only checks for static files at startup and so files added after the app starts won't be seen. More importantly though, serving user-uploaded files from the same domain as your main application is a security risk (this [blog post](https://security.googleblog.com/2012/08/content-hosting-for-modern-web.html) from Google security describes the problem well). And in addition to that, using local disk to store and serve your user media makes it harder to scale your application across multiple machines.
+ServeStatic is not suitable for serving user-uploaded "media" files. For one thing, as described above, it only checks for static files at startup and so files added after the app starts won't be seen. More importantly though, serving user-uploaded files from the same domain as your main application is a security risk (this [blog post](https://security.googleblog.com/2012/08/content-hosting-for-modern-web.html) from Google security describes the problem well). And in addition to that, using local disk to store and serve your user media makes it harder to scale your application across multiple machines.
 
 For all these reasons, it's much better to store files on a separate dedicated storage service and serve them to users from there. The [django-storages](https://django-storages.readthedocs.io/) library provides many options e.g. Amazon S3, Azure Storage, and Rackspace CloudFiles.
 
@@ -470,7 +470,7 @@ For all these reasons, it's much better to store files on a separate dedicated s
 
 ### How do I know it's working?
 
-You can confirm that WhiteNoise is installed and configured correctly by running you application locally with `DEBUG` disabled and checking that your static files still load.
+You can confirm that ServeStatic is installed and configured correctly by running you application locally with `DEBUG` disabled and checking that your static files still load.
 
 First you need to run `collectstatic` to get your files in the right place:
 
@@ -488,19 +488,19 @@ You should find that your static files are served, just as they would be in prod
 
 ---
 
-### Troubleshooting the WhiteNoise Storage backend
+### Troubleshooting the ServeStatic Storage backend
 
-If you're having problems with the WhiteNoise storage backend, the chances are they're due to the underlying Django storage engine. This is because WhiteNoise only adds a thin wrapper around Django's storage to add compression support, and because the compression code is very simple it generally doesn't cause problems.
+If you're having problems with the ServeStatic storage backend, the chances are they're due to the underlying Django storage engine. This is because ServeStatic only adds a thin wrapper around Django's storage to add compression support, and because the compression code is very simple it generally doesn't cause problems.
 
 The most common issue is that there are CSS files which reference other files (usually images or fonts) which don't exist at that specified path. When Django attempts to rewrite these references it looks for the corresponding file and throws an error if it can't find it.
 
-To test whether the problems are due to WhiteNoise or not, try swapping the WhiteNoise storage backend for the Django one:
+To test whether the problems are due to ServeStatic or not, try swapping the ServeStatic storage backend for the Django one:
 
 ```python
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 ```
 
-If the problems persist then your issue is with Django itself (try the [docs](https://docs.djangoproject.com/en/stable/ref/contrib/staticfiles/) or the [mailing list](https://groups.google.com/d/forum/django-users)). If the problem only occurs with WhiteNoise then raise a ticket on the [issue tracker](https://github.com/evansd/whitenoise/issues).
+If the problems persist then your issue is with Django itself (try the [docs](https://docs.djangoproject.com/en/stable/ref/contrib/staticfiles/) or the [mailing list](https://groups.google.com/d/forum/django-users)). If the problem only occurs with ServeStatic then raise a ticket on the [issue tracker](https://github.com/evansd/servestatic/issues).
 
 ---
 
@@ -514,13 +514,13 @@ The instructions for setting up CloudFront given above will result in the entire
 
 ### Using other storage backends
 
-WhiteNoise will only work with storage backends that stores their files on the local filesystem in `STATIC_ROOT`. It will not work with backends that store files remotely, for instance on Amazon S3.
+ServeStatic will only work with storage backends that stores their files on the local filesystem in `STATIC_ROOT`. It will not work with backends that store files remotely, for instance on Amazon S3.
 
-### WhiteNoise makes my tests run slow!
+### ServeStatic makes my tests run slow!
 
-WhiteNoise is designed to do as much work as possible upfront when the application starts so that it can serve files as efficiently as possible while the application is running. This makes sense for long-running production processes, but you might find that the added startup time is a problem during test runs when application instances are frequently being created and destroyed.
+ServeStatic is designed to do as much work as possible upfront when the application starts so that it can serve files as efficiently as possible while the application is running. This makes sense for long-running production processes, but you might find that the added startup time is a problem during test runs when application instances are frequently being created and destroyed.
 
-The simplest way to fix this is to make sure that during testing the `WHITENOISE_AUTOREFRESH` setting is set to `True`. (By default it is `True` when `DEBUG` is enabled and `False` otherwise.) This stops WhiteNoise from scanning your static files on start up but other than that its behaviour should be exactly the same.
+The simplest way to fix this is to make sure that during testing the `SERVESTATIC_AUTOREFRESH` setting is set to `True`. (By default it is `True` when `DEBUG` is enabled and `False` otherwise.) This stops ServeStatic from scanning your static files on start up but other than that its behaviour should be exactly the same.
 
 It is also worth making sure you don't have unnecessary files in your `STATIC_ROOT` directory. In particular, be careful not to include a `node_modules` directory which can contain a very large number of files and significantly slow down your application startup. If you need to include specific files from `node_modules` then you can create symlinks from within your static directory to just the files you need.
 
@@ -534,9 +534,9 @@ python manage.py findstatic --verbosity 2 foo
 
 which will show you all the paths which Django searches for the file "foo".
 
-If, for some reason, you want Django to silently ignore such errors you can set `WHITENOISE_MANIFEST_STRICT` to `False`.
+If, for some reason, you want Django to silently ignore such errors you can set `SERVESTATIC_MANIFEST_STRICT` to `False`.
 
-### Using WhiteNoise with Webpack / Browserify / $LATEST_JS_THING
+### Using ServeStatic with Webpack / Browserify / $LATEST_JS_THING
 
 A simple technique for integrating any frontend build system with Django is to use a directory layout like this:
 
@@ -577,4 +577,4 @@ FORCE_SCRIPT_NAME = "/my-app"
 STATIC_URL = FORCE_SCRIPT_NAME + "/static/"
 ```
 
-If you have set these two values then WhiteNoise will automatically configure itself correctly. If you are doing something more complex you may need to set `WHITENOISE_STATIC_PREFIX` explicitly yourself.
+If you have set these two values then ServeStatic will automatically configure itself correctly. If you are doing something more complex you may need to set `SERVESTATIC_STATIC_PREFIX` explicitly yourself.

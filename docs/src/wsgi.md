@@ -1,28 +1,28 @@
-# Using WhiteNoise with any WSGI application
+# Using ServeStatic with any WSGI application
 
 !!! Note
 
-    These instructions apply to any WSGI application. However, for Django applications you would be better off using the `WhiteNoiseMiddleware` class which makes integration easier.
+    These instructions apply to any WSGI application. However, for Django applications you would be better off using the `ServeStaticMiddleware` class which makes integration easier.
 
-To enable WhiteNoise you need to wrap your existing WSGI application in a WhiteNoise instance and tell it where to find your static files. For example:
+To enable ServeStatic you need to wrap your existing WSGI application in a ServeStatic instance and tell it where to find your static files. For example:
 
 ```python
-from whitenoise import WhiteNoise
+from servestatic import ServeStatic
 
 from my_project import MyWSGIApp
 
 application = MyWSGIApp()
-application = WhiteNoise(application, root="/path/to/static/files")
+application = ServeStatic(application, root="/path/to/static/files")
 application.add_files("/path/to/more/static/files", prefix="more-files/")
 ```
 
-On initialization, WhiteNoise walks over all the files in the directories that have been added (descending into sub-directories) and builds a list of available static files. Any requests which match a static file get served by WhiteNoise, all others are passed through to the original WSGI application.
+On initialization, ServeStatic walks over all the files in the directories that have been added (descending into sub-directories) and builds a list of available static files. Any requests which match a static file get served by ServeStatic, all others are passed through to the original WSGI application.
 
 See the sections on `compression <compression>` and `caching <caching>` for further details.
 
-## WhiteNoise API
+## ServeStatic API
 
-`WhiteNoise(application, root=None, prefix=None, \**kwargs)`
+`ServeStatic(application, root=None, prefix=None, \**kwargs)`
 
 param Callable application  
 Original WSGI application
@@ -36,7 +36,7 @@ If set, passed to `add_files` method
 param \*\*kwargs  
 Sets `configuration attributes <configuration>` for this instance
 
-`WhiteNoise.add_files(root, prefix=None)`
+`ServeStatic.add_files(root, prefix=None)`
 
 param str root  
 Absolute path to a directory of static files to be served
@@ -47,14 +47,14 @@ slashes are automatically added.
 
 ## Compression Support
 
-When WhiteNoise builds its list of available files it checks for corresponding files with a `.gz` and a `.br` suffix (e.g., `scripts/app.js`, `scripts/app.js.gz` and `scripts/app.js.br`). If it finds them, it will assume that they are (respectively) gzip and [brotli](https://en.wikipedia.org/wiki/Brotli) compressed versions of the original file and it will serve them in preference to the uncompressed version where clients indicate that they that compression format (see note on Amazon S3 for why this behaviour is important).
+When ServeStatic builds its list of available files it checks for corresponding files with a `.gz` and a `.br` suffix (e.g., `scripts/app.js`, `scripts/app.js.gz` and `scripts/app.js.br`). If it finds them, it will assume that they are (respectively) gzip and [brotli](https://en.wikipedia.org/wiki/Brotli) compressed versions of the original file and it will serve them in preference to the uncompressed version where clients indicate that they that compression format (see note on Amazon S3 for why this behaviour is important).
 
-WhiteNoise comes with a command line utility which will generate compressed versions of your files for you. Note that in order for brotli compression to work the [Brotli Python package](https://pypi.org/project/Brotli/) must be installed.
+ServeStatic comes with a command line utility which will generate compressed versions of your files for you. Note that in order for brotli compression to work the [Brotli Python package](https://pypi.org/project/Brotli/) must be installed.
 
 Usage is simple:
 
 ```console
-$ python -m whitenoise.compress --help
+$ python -m servestatic.compress --help
 usage: compress.py [-h] [-q] [--no-gzip] [--no-brotli]
                    root [extensions [extensions ...]]
 
@@ -79,11 +79,11 @@ You can either run this during development and commit your compressed files to y
 
 ## Caching Headers
 
-By default, WhiteNoise sets a max-age header on all responses it sends. You can configure this by passing a `max_age` keyword argument.
+By default, ServeStatic sets a max-age header on all responses it sends. You can configure this by passing a `max_age` keyword argument.
 
-WhiteNoise sets both `Last-Modified` and `ETag` headers for all files and will return Not Modified responses where appropriate. The ETag header uses the same format as nginx which is based on the size and last-modified time of the file. If you want to use a different scheme for generating ETags you can set them via you own function by using the `add_headers_function` option.
+ServeStatic sets both `Last-Modified` and `ETag` headers for all files and will return Not Modified responses where appropriate. The ETag header uses the same format as nginx which is based on the size and last-modified time of the file. If you want to use a different scheme for generating ETags you can set them via you own function by using the `add_headers_function` option.
 
-Most modern static asset build systems create uniquely named versions of each file. This results in files which are immutable (i.e., they can never change their contents) and can therefore by cached indefinitely. In order to take advantage of this, WhiteNoise needs to know which files are immutable. This can be done using the `immutable_file_test` option which accepts a reference to a function.
+Most modern static asset build systems create uniquely named versions of each file. This results in files which are immutable (i.e., they can never change their contents) and can therefore by cached indefinitely. In order to take advantage of this, ServeStatic needs to know which files are immutable. This can be done using the `immutable_file_test` option which accepts a reference to a function.
 
 The exact details of how you implement this method will depend on your particular asset build system but see the `option documentation` for a simple example.
 
@@ -105,11 +105,11 @@ See the instructions for `using a CDN with Django` . The same principles apply h
 
 ## Redirecting to HTTPS
 
-WhiteNoise does not handle redirection itself, but works well alongside [wsgi-sslify](https://github.com/jacobian/wsgi-sslify), which performs HTTP to HTTPS redirection as well as optionally setting an HSTS header. Simply wrap the WhiteNoise WSGI application with `sslify()` - see the [wsgi-sslify](https://github.com/jacobian/wsgi-sslify) documentation for more details.
+ServeStatic does not handle redirection itself, but works well alongside [wsgi-sslify](https://github.com/jacobian/wsgi-sslify), which performs HTTP to HTTPS redirection as well as optionally setting an HSTS header. Simply wrap the ServeStatic WSGI application with `sslify()` - see the [wsgi-sslify](https://github.com/jacobian/wsgi-sslify) documentation for more details.
 
 ## Configuration attributes
 
-These can be set by passing keyword arguments to the constructor, or by sub-classing WhiteNoise and setting the attributes directly.
+These can be set by passing keyword arguments to the constructor, or by sub-classing ServeStatic and setting the attributes directly.
 
 `autorefresh`
 
@@ -125,7 +125,7 @@ default
 
 Time (in seconds) for which browsers and proxies should cache files.
 
-The default is chosen to be short enough not to cause problems with stale versions but long enough that, if you're running WhiteNoise behind a CDN, the CDN will still take the majority of the strain during times of heavy load.
+The default is chosen to be short enough not to cause problems with stale versions but long enough that, if you're running ServeStatic behind a CDN, the CDN will still take the majority of the strain during times of heavy load.
 
 Set to `None` to disable setting any `Cache-Control` header on non-versioned files.
 
@@ -149,7 +149,7 @@ A dictionary mapping file extensions (lowercase) to the mimetype for that extens
 
     {'.foo': 'application/x-foo'}
 
-Note that WhiteNoise ships with its own default set of mimetypes and does not use the system-supplied ones (e.g. `/etc/mime.types`). This ensures that it behaves consistently regardless of the environment in which it's run. View the defaults in the `media_types.py` file.
+Note that ServeStatic ships with its own default set of mimetypes and does not use the system-supplied ones (e.g. `/etc/mime.types`). This ensures that it behaves consistently regardless of the environment in which it's run. View the defaults in the `media_types.py` file.
 
 In addition to file extensions, mimetypes can be specified by supplying the entire filename, for example:
 
@@ -194,7 +194,7 @@ For example: :
         if path.endswith('.pdf'):
             headers['Content-Disposition'] = 'attachment'
 
-    application = WhiteNoise(application,
+    application = ServeStatic(application,
                              add_headers_function=force_download_pdfs)
 
 The function is passed:
