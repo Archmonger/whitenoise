@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from wsgiref.util import FileWrapper
 
-from .base import BaseWhiteNoise
+from .base import BaseServeStatic
 from .string_utils import decode_path_info
 
 
-class WhiteNoise(BaseWhiteNoise):
+class ServeStatic(BaseServeStatic):
     def __call__(self, environ, start_response):
         path = decode_path_info(environ.get("PATH_INFO", ""))
         if self.autorefresh:

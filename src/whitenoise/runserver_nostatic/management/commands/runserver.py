@@ -1,11 +1,12 @@
 """
 Subclass the existing 'runserver' command and change the default options
-to disable static file serving, allowing WhiteNoise to handle static files.
+to disable static file serving, allowing ServeStatic to handle static files.
 
 There is some unpleasant hackery here because we don't know which command class
 to subclass until runtime as it depends on which INSTALLED_APPS we have, so we
 have to determine this dynamically.
 """
+
 from __future__ import annotations
 
 from importlib import import_module
@@ -48,6 +49,6 @@ class Command(RunserverCommand):
         if parser.get_default("use_static_handler") is True:
             parser.set_defaults(use_static_handler=False)
             parser.description += (
-                "\n(Wrapped by 'whitenoise.runserver_nostatic' to always"
+                "\n(Wrapped by 'servestatic.runserver_nostatic' to always"
                 " enable '--nostatic')"
             )

@@ -29,7 +29,7 @@ class CompressedStaticFilesStorage(StaticFilesStorage):
         if dry_run:
             return
 
-        extensions = getattr(settings, "WHITENOISE_SKIP_COMPRESS_EXTENSIONS", None)
+        extensions = getattr(settings, "SERVESTATIC_SKIP_COMPRESS_EXTENSIONS", None)
         compressor = self.create_compressor(extensions=extensions, quiet=True)
 
         for path in paths:
@@ -58,7 +58,7 @@ class CompressedManifestStaticFilesStorage(ManifestStaticFilesStorage):
     _new_files = None
 
     def __init__(self, *args, **kwargs):
-        manifest_strict = getattr(settings, "WHITENOISE_MANIFEST_STRICT", None)
+        manifest_strict = getattr(settings, "SERVESTATIC_MANIFEST_STRICT", None)
         if manifest_strict is not None:
             self.manifest_strict = manifest_strict
         super().__init__(*args, **kwargs)
@@ -115,7 +115,7 @@ class CompressedManifestStaticFilesStorage(ManifestStaticFilesStorage):
 
     @property
     def keep_only_hashed_files(self):
-        return getattr(settings, "WHITENOISE_KEEP_ONLY_HASHED_FILES", False)
+        return getattr(settings, "SERVESTATIC_KEEP_ONLY_HASHED_FILES", False)
 
     def delete_files(self, files_to_delete):
         for name in files_to_delete:
@@ -129,7 +129,7 @@ class CompressedManifestStaticFilesStorage(ManifestStaticFilesStorage):
         return Compressor(**kwargs)
 
     def compress_files(self, names):
-        extensions = getattr(settings, "WHITENOISE_SKIP_COMPRESS_EXTENSIONS", None)
+        extensions = getattr(settings, "SERVESTATIC_SKIP_COMPRESS_EXTENSIONS", None)
         compressor = self.create_compressor(extensions=extensions, quiet=True)
         for name in names:
             if compressor.should_compress(name):
@@ -143,7 +143,7 @@ class CompressedManifestStaticFilesStorage(ManifestStaticFilesStorage):
         """
         If a CSS file contains references to images, fonts etc that can't be found
         then Django's `post_process` blows up with a not particularly helpful
-        ValueError that leads people to think WhiteNoise is broken.
+        ValueError that leads people to think ServeStatic is broken.
 
         Here we attempt to intercept such errors and reformat them to be more
         helpful in revealing the source of the problem.

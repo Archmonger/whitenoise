@@ -15,7 +15,7 @@ from .responders import StaticFile
 from .string_utils import ensure_leading_trailing_slash
 
 
-class BaseWhiteNoise:
+class BaseServeStatic:
     # Ten years is what nginx sets a max age if you use 'expires max;'
     # so we'll follow its lead
     FOREVER = 10 * 365 * 24 * 60 * 60
@@ -208,7 +208,7 @@ class BaseWhiteNoise:
 
     def immutable_file_test(self, path, url):
         """
-        This should be implemented by sub-classes (see e.g. WhiteNoiseMiddleware)
+        This should be implemented by sub-classes (see e.g. ServeStaticMiddleware)
         or by setting the `immutable_file_test` config option
         """
         return False

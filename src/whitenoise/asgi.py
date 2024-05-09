@@ -5,13 +5,13 @@ import asyncio
 from asgiref.compatibility import guarantee_single_callable
 
 from .string_utils import decode_path_info
-from whitenoise.base import BaseWhiteNoise
+from servestatic.base import BaseServeStatic
 
 # This is the same size as wsgiref.FileWrapper
 BLOCK_SIZE = 8192
 
 
-class AsgiWhiteNoise(BaseWhiteNoise):
+class AsgiServeStatic(BaseServeStatic):
     user_app = None
 
     async def __call__(self, scope, receive, send):
@@ -54,7 +54,7 @@ class AsgiFileServer:
             for key, value in scope["headers"]
         }
 
-        # Get the WhiteNoise file response
+        # Get the ServeStatic file response
         response = await self.static_file.aget_response(scope["method"], wsgi_headers)
 
         # Start a new HTTP response for the file

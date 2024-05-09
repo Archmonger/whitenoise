@@ -20,7 +20,7 @@ _This project is a fork of [WhiteNoise](https://github.com/evansd/whitenoise) fo
 
 ---
 
-Simplified static file serving for Python [ASGI](https://asgi.readthedocs.io/en/latest/)/[WSGI](https://wsgi.readthedocs.io/en/latest/) web apps.
+Simplified static file serving for Python web apps.
 
 With a couple of lines of config `ServeStatic` allows your web app to serve its own static files, making it a self-contained unit that can be deployed anywhere without relying on nginx, Amazon S3, or any other external service. This is especially useful on Heroku, OpenShift, and other PaaS providers.
 

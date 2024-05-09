@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .asgi import AsgiWhiteNoise
-from .wsgi import WhiteNoise
+from .asgi import AsgiServeStatic
+from .wsgi import ServeStatic
 
-__all__ = ["AsgiWhiteNoise", "WhiteNoise"]
+__all__ = ["AsgiServeStatic", "ServeStatic"]
