@@ -16,6 +16,8 @@
     </a>
 </p>
 
+_This project is a fork of [WhiteNoise](https://github.com/evansd/whitenoise) for continued maintenience and feature updates._
+
 ---
 
 Simplified static file serving for Python [ASGI](https://asgi.readthedocs.io/en/latest/)/[WSGI](https://wsgi.readthedocs.io/en/latest/) web apps.
@@ -32,7 +34,3 @@ It's designed to work nicely with a CDN for high-traffic sites so you don't have
 - Setting far-future cache headers on content which won't change
 
 Worried that serving static files with Python is horribly inefficient? Still think you should be using Amazon S3? Have a look at the [FAQ](#).
-
----
-
-_This project is a fork of [WhiteNoise](https://github.com/evansd/whitenoise) for continued maintenience and feature updates._
