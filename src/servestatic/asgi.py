@@ -11,7 +11,7 @@ from servestatic.base import BaseServeStatic
 BLOCK_SIZE = 8192
 
 
-class AsgiServeStatic(BaseServeStatic):
+class ServeStaticASGI(BaseServeStatic):
     user_app = None
 
     async def __call__(self, scope, receive, send):

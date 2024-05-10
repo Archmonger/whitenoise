@@ -9,7 +9,7 @@ from .utils import AsgiReceiveEmulator
 from .utils import AsgiScopeEmulator
 from .utils import AsgiSendEmulator
 from .utils import Files
-from servestatic.asgi import AsgiServeStatic
+from servestatic.asgi import ServeStaticASGI
 
 
 @pytest.fixture()
@@ -36,7 +36,7 @@ def application(request, test_files):
         )
         await send({"type": "http.response.body", "body": b"Not Found"})
 
-    return AsgiServeStatic(
+    return ServeStaticASGI(
         asgi_app, root=test_files.directory, autorefresh=request.param
     )
 
