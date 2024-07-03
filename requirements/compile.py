@@ -4,231 +4,196 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
-from functools import partial
 from pathlib import Path
 
 if __name__ == "__main__":
     os.chdir(Path(__file__).parent)
+    os.environ["CUSTOM_COMPILE_COMMAND"] = "requirements/compile.py"
+    os.environ["PIP_REQUIRE_VIRTUALENV"] = "0"
     common_args = [
-        "uv",
-        "pip",
+        "-m",
+        "piptools",
         "compile",
-        "--quiet",
-        # On Windows, Django also depends on tzdata, which we aren’t pinning
         # "--generate-hashes",
-        "--constraint",
-        "-",
-        "requirements.in",
-        *sys.argv[1:],
-    ]
-    run = partial(subprocess.run, check=True)
-    run(
+        "--allow-unsafe",
+    ] + sys.argv[1:]
+    subprocess.run(
         [
+            "python3.8",
             *common_args,
-            "--python",
-            "3.8",
-            "--output-file",
+            "-P",
+            "Django>=3.2a1,<3.3",
+            "-o",
             "py38-django32.txt",
         ],
-        input=b"Django>=3.2a1,<3.3",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.8",
             *common_args,
-            "--python",
-            "3.8",
-            "--output-file",
+            "-P",
+            "Django>=4.0a1,<4.1",
+            "-o",
             "py38-django40.txt",
         ],
-        input=b"Django>=4.0a1,<4.1",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.8",
             *common_args,
-            "--python",
-            "3.8",
-            "--output-file",
+            "-P",
+            "Django>=4.1a1,<4.2",
+            "-o",
             "py38-django41.txt",
         ],
-        input=b"Django>=4.1a1,<4.2",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.8",
             *common_args,
-            "--python",
-            "3.8",
-            "--output-file",
+            "-P",
+            "Django>=4.2a1,<5.0",
+            "-o",
             "py38-django42.txt",
         ],
-        input=b"Django>=4.2a1,<5.0",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.9",
             *common_args,
-            "--python",
-            "3.9",
-            "--output-file",
+            "-P",
+            "Django>=3.2a1,<3.3",
+            "-o",
             "py39-django32.txt",
         ],
-        input=b"Django>=3.2a1,<3.3",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.9",
             *common_args,
-            "--python",
-            "3.9",
-            "--output-file",
+            "-P",
+            "Django>=4.0a1,<4.1",
+            "-o",
             "py39-django40.txt",
         ],
-        input=b"Django>=4.0a1,<4.1",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.9",
             *common_args,
-            "--python",
-            "3.9",
-            "--output-file",
+            "-P",
+            "Django>=4.1a1,<4.2",
+            "-o",
             "py39-django41.txt",
         ],
-        input=b"Django>=4.1a1,<4.2",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.9",
             *common_args,
-            "--python",
-            "3.9",
-            "--output-file",
+            "-P",
+            "Django>=4.2a1,<5.0",
+            "-o",
             "py39-django42.txt",
         ],
-        input=b"Django>=4.2a1,<5.0",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.10",
             *common_args,
-            "--python",
-            "3.10",
-            "--output-file",
+            "-P",
+            "Django>=3.2a1,<3.3",
+            "-o",
             "py310-django32.txt",
         ],
-        input=b"Django>=3.2a1,<3.3",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.10",
             *common_args,
-            "--python",
-            "3.10",
-            "--output-file",
+            "-P",
+            "Django>=4.0a1,<4.1",
+            "-o",
             "py310-django40.txt",
         ],
-        input=b"Django>=4.0a1,<4.1",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.10",
             *common_args,
-            "--python",
-            "3.10",
-            "--output-file",
+            "-P",
+            "Django>=4.1a1,<4.2",
+            "-o",
             "py310-django41.txt",
         ],
-        input=b"Django>=4.1a1,<4.2",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.10",
             *common_args,
-            "--python",
-            "3.10",
-            "--output-file",
+            "-P",
+            "Django>=4.2a1,<5.0",
+            "-o",
             "py310-django42.txt",
         ],
-        input=b"Django>=4.2a1,<5.0",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.11",
             *common_args,
-            "--python",
-            "3.10",
-            "--output-file",
-            "py310-django50.txt",
-        ],
-        input=b"Django>=5.0a1,<5.1",
-    )
-    run(
-        [
-            *common_args,
-            "--python",
-            "3.10",
-            "--output-file",
-            "py310-django51.txt",
-        ],
-        input=b"Django>=5.1a1,<5.2",
-    )
-    run(
-        [
-            *common_args,
-            "--python",
-            "3.11",
-            "--output-file",
+            "-P",
+            "Django>=4.1a1,<4.2",
+            "-o",
             "py311-django41.txt",
         ],
-        input=b"Django>=4.1a1,<4.2",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.11",
             *common_args,
-            "--python",
-            "3.11",
-            "--output-file",
+            "-P",
+            "Django>=4.2a1,<5.0",
+            "-o",
             "py311-django42.txt",
         ],
-        input=b"Django>=4.2a1,<5.0",
+        check=True,
+        capture_output=True,
     )
-    run(
+    subprocess.run(
         [
+            "python3.12",
             *common_args,
-            "--python",
-            "3.11",
-            "--output-file",
-            "py311-django50.txt",
-        ],
-        input=b"Django>=5.0a1,<5.1",
-    )
-    run(
-        [
-            *common_args,
-            "--python",
-            "3.11",
-            "--output-file",
-            "py311-django51.txt",
-        ],
-        input=b"Django>=5.1a1,<5.2",
-    )
-    run(
-        [
-            *common_args,
-            "--python",
-            "3.12",
-            "--output-file",
+            "-P",
+            "Django>=4.2a1,<5.0",
+            "-o",
             "py312-django42.txt",
         ],
-        input=b"Django>=4.2a1,<5.0",
-    )
-    run(
-        [
-            *common_args,
-            "--python",
-            "3.12",
-            "--output-file",
-            "py312-django50.txt",
-        ],
-        input=b"Django>=5.0a1,<5.1",
-    )
-    run(
-        [
-            *common_args,
-            "--python",
-            "3.12",
-            "--output-file",
-            "py312-django51.txt",
-        ],
-        input=b"Django>=5.1a1,<5.2",
+        check=True,
+        capture_output=True,
     )
