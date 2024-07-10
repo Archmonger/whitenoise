@@ -40,7 +40,7 @@ Using the following categories, list your changes in this order:
 
 ### Changed
 
-- Forked from [whitenoise](#) to add ASGI support.
+- Forked from [`whitenoise`](https://github.com/evansd/whitenoise) to add ASGI support.
 
-[Unreleased]: https://github.com/reactive-python/reactpy-django/compare/1.0.0...HEAD
-[1.0.0]: https://github.com/reactive-python/reactpy-django/releases/tag/1.0.0
+[Unreleased]: https://github.com/Archmonger/ServeStatic/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/Archmonger/ServeStatic/releases/tag/1.0.0
